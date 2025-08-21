@@ -2,8 +2,8 @@
 
 import express from 'express';
 import cors from 'cors';
-// import dotenv from 'dotenv';
-// import webpush from 'web-push';
+import dotenv from 'dotenv';
+import webpush from 'web-push';
 import authRoutes from './routes/auth.js';
 import seriesRoutes from './routes/series.js';
 import productsRoutes from './routes/products.js';
@@ -17,7 +17,7 @@ import transactionsRoutes from './routes/transactions.js'
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
-// dotenv.config();
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -41,20 +41,20 @@ app.get("/", (req, res) => {
   res.send("✅ Server is working");
 });
 
-// let subscriptions = [];
+let subscriptions = [];
 
 // const vapidKeys = {
 //   publicKey: 'BLfOtWKp1V5_WKRNj58WYwP1RcGeFRpXV8gNv77b5jmPLz8IXHezrrPcm_4gtHixfGdifQauC_s-cO9Z3xEMMxI',
 //   privateKey: 'u1dgPORBT74bFkUqsK7ymsrJ8LPJg0kPPpqK1Uoif-s',
 // };
 
-// webpush.setVapidDetails('mailto:knightxenith@gmail.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
+webpush.setVapidDetails('mailto:knightxenith@gmail.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
-// app.post('/api/subscribe', (req, res) => {
-//   const subscription = req.body;
-//   subscriptions.push(subscription);
-//   res.status(201).json({ message: 'Subscribed successfully.' });
-// });
+app.post('/api/subscribe', (req, res) => {
+  const subscription = req.body;
+  subscriptions.push(subscription);
+  res.status(201).json({ message: 'Subscribed successfully.' });
+});
 
 // old
 // app.post('/api/notify', async (req, res) => {
@@ -68,27 +68,27 @@ app.get("/", (req, res) => {
 //   res.json({ message: 'Notifications sent.' });
 // });
 
-// app.post('/api/notify', async (req, res) => {
-//   const payload = req.body;
+app.post('/api/notify', async (req, res) => {
+  const payload = req.body;
 
-//   try {
-//     const results = await Promise.allSettled(
-//       subscriptions.map(sub =>
-//         webpush.sendNotification(sub, JSON.stringify(payload))
-//       )
-//     );
+  try {
+    const results = await Promise.allSettled(
+      subscriptions.map(sub =>
+        webpush.sendNotification(sub, JSON.stringify(payload))
+      )
+    );
 
-//     const failed = results.filter(r => r.status === "rejected");
-//     if (failed.length) {
-//       console.error("Some push notifications failed", failed);
-//     }
+    const failed = results.filter(r => r.status === "rejected");
+    if (failed.length) {
+      console.error("Some push notifications failed", failed);
+    }
 
-//     res.json({ message: 'Notifications attempted.' });
-//   } catch (err) {
-//     console.error("Push error:", err);
-//     res.status(500).json({ error: "Failed to send push notifications" });
-//   }
-// });
+    res.json({ message: 'Notifications attempted.' });
+  } catch (err) {
+    console.error("Push error:", err);
+    res.status(500).json({ error: "Failed to send push notifications" });
+  }
+});
 
 
 // const PORT = process.env.PORT || 3000;
