@@ -9,8 +9,10 @@ import seriesRoutes from './routes/series.js';
 import productsRoutes from './routes/products.js';
 import profilRoutes from './routes/profil.js';
 import promoRoutes from './routes/promos.js';
-import productDetailRoutes from './routes/productDetail.js'
-import transactionsRoutes from './routes/transactions.js'
+import productDetailRoutes from './routes/productDetail.js';
+import transactionsRoutes from './routes/transactions.js';
+import brandsRoutes from './routes/brands.js';
+import historyPoinRoutes from './routes/historyPoin.js';
 // import path from "path";
 // import { fileURLToPath } from "url";
 
@@ -36,6 +38,8 @@ app.use('/api', productDetailRoutes);
 app.use('/api', profilRoutes);
 app.use('/api', promoRoutes);
 app.use('/api', transactionsRoutes);
+app.use('/api', brandsRoutes);
+app.use('/api', historyPoinRoutes);
 
 app.get("/", (req, res) => {
   res.send("✅ Server is working");
