@@ -21,13 +21,9 @@ jobs:
       # 3. Install dependencies
       - run: npm install
 
-      # 4. Write Firebase key (from GitHub Secret) to a file
-      - name: Create Firebase service account key
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/firebase-key.json
-
-      # 5. Deploy with Firebase CLI
+      # 4. Deploy with Firebase CLI
       - name: Deploy to Firebase
         run: npx firebase-tools deploy --only hosting
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase-key.json
+          FIREBASE_SERVICE_ACCOUNT_BASE64: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASE64 }}
+
