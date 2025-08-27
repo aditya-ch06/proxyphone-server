@@ -1,9 +1,14 @@
 import admin from "firebase-admin";
 import { readFileSync } from "fs";
 import Token from "./models/Token.js";
+import dotenv from "dotenv";
 
-// Parse the JSON string from the environment variable
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+dotenv.config(); // loads .env locally
+
+// Decode Base64 → string → JSON
+const serviceAccount = JSON.parse(
+  Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, "base64").toString("utf8")
+);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
