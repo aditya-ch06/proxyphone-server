@@ -13,6 +13,11 @@ import productDetailRoutes from './routes/productDetail.js';
 import transactionsRoutes from './routes/transactions.js';
 import brandsRoutes from './routes/brands.js';
 import historyPoinRoutes from './routes/historyPoin.js';
+import notificationRoutes from './routes/notification.js'; 
+import mongoose from 'mongoose';
+// import Subscription from './models/Subscription.js';
+// import Token from './models/Token.js'
+
 // import path from "path";
 // import { fileURLToPath } from "url";
 
@@ -20,6 +25,11 @@ import historyPoinRoutes from './routes/historyPoin.js';
 // const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const app = express();
 app.use(cors());
@@ -40,62 +50,95 @@ app.use('/api', promoRoutes);
 app.use('/api', transactionsRoutes);
 app.use('/api', brandsRoutes);
 app.use('/api', historyPoinRoutes);
+app.use('/api/notification', notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("✅ Server is working");
 });
 
-let subscriptions = [];
+// let subscriptions = [];
 
-// const vapidKeys = {
-//   publicKey: 'BLfOtWKp1V5_WKRNj58WYwP1RcGeFRpXV8gNv77b5jmPLz8IXHezrrPcm_4gtHixfGdifQauC_s-cO9Z3xEMMxI',
-//   privateKey: 'u1dgPORBT74bFkUqsK7ymsrJ8LPJg0kPPpqK1Uoif-s',
-// };
+// webpush.setVapidDetails('mailto:knightxenith@gmail.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
-webpush.setVapidDetails('mailto:knightxenith@gmail.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
+// app.post('/api/subscribe', async (req, res) => {
+//   const subscription = req.body;
+//   // subscriptions.push(subscription);
+//   // res.status(201).json({ message: 'Subscribed successfully.' });
 
-app.post('/api/subscribe', (req, res) => {
-  const subscription = req.body;
-  subscriptions.push(subscription);
-  res.status(201).json({ message: 'Subscribed successfully.' });
-});
+//   try {
+//     // Upsert subscription
+//     await Subscription.updateOne(
+//       { endpoint: subscription.endpoint },
+//       { $set: subscription },
+//       { upsert: true }
+//     );
+//     res.status(201).json({ message: 'Subscription saved.' });
+//   } catch (error) {
+//     console.error('Error saving subscription:', error);
+//     res.status(500).json({ error: 'Failed to save subscription' });
+//   }
+// });
 
-// old
 // app.post('/api/notify', async (req, res) => {
 //   const payload = req.body;
+
+//   const subscriptions = await Subscription.find();
+
 //   const notifyAll = subscriptions.map(sub =>
 //     webpush.sendNotification(sub, JSON.stringify(payload)).catch(err => {
 //       console.error('Push failed:', err);
 //     })
 //   );
+
 //   await Promise.all(notifyAll);
 //   res.json({ message: 'Notifications sent.' });
 // });
 
-app.post('/api/notify', async (req, res) => {
-  const payload = req.body;
+// app.get('/front/subscriptions', async (req, res) => {
+//   try {
+//     const subscriptions = await Subscription.find().lean();
 
-  try {
-    const results = await Promise.allSettled(
-      subscriptions.map(sub =>
-        webpush.sendNotification(sub, JSON.stringify(payload))
-      )
-    );
+//     let html = `
+//       <html>
+//         <head>
+//           <title>Subscriptions</title>
+//           <style>
+//             body { font-family: Arial, sans-serif; padding: 20px; }
+//             pre { background: #f4f4f4; padding: 10px; border-radius: 6px; }
+//           </style>
+//         </head>
+//         <body>
+//           <h1>Push Subscriptions</h1>
+//           ${
+//             subscriptions.length === 0
+//               ? '<p>No subscriptions found.</p>'
+//               : subscriptions
+//                   .map(
+//                     (sub, i) =>
+//                       `<h3>Subscription ${i + 1}</h3><pre>${JSON.stringify(
+//                         sub,
+//                         null,
+//                         2
+//                       )}</pre>`
+//                   )
+//                   .join('')
+//           }
+//         </body>
+//       </html>
+//     `;
 
-    const failed = results.filter(r => r.status === "rejected");
-    if (failed.length) {
-      console.error("Some push notifications failed", failed);
-    }
+//     res.send(html);
+//   } catch (error) {
+//     console.error('Error fetching subscriptions:', error);
+//     res.status(500).send('<p>Failed to fetch subscriptions</p>');
+//   }
+// });
 
-    res.json({ message: 'Notifications attempted.' });
-  } catch (err) {
-    console.error("Push error:", err);
-    res.status(500).json({ error: "Failed to send push notifications" });
-  }
-});
+// app.post("/api/save-fcm-token", async (req, res) => {
+//   const { userId, token } = req.body;
+//   await Token.updateOne({ userId }, { token }, { upsert: true });
+//   res.json({ success: true });
+// });
 
-
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 export default app; // export app instead of app.listen()
 
