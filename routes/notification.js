@@ -69,7 +69,7 @@ router.post("/register-token", async (req, res) => {
   }
 
   try {
-    await Token.deleteOne({ token });
+    // await Token.deleteOne({ token });
     // 1. Save or update token in DB
     await Token.findOneAndUpdate(
       { userId },
@@ -153,6 +153,22 @@ router.patch("/mark-all-read/:userId", async (req, res) => {
     res.status(500).json({ error: "Failed to mark all notifications as read" });
   }
 });
+
+router.post("/delete-fcm-token", async (req, res) => {
+  try {
+    const { userId, token } = req.body;
+    if (!userId || !token) {
+      return res.status(400).json({ error: "userId and token required" });
+    }
+
+    await Token.deleteOne({ userId, token });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Error deleting token:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 
 export default router;
