@@ -11,6 +11,7 @@ import profilRoutes from './routes/profil.js';
 import promoRoutes from './routes/promos.js';
 import productDetailRoutes from './routes/productDetail.js';
 import transactionsRoutes from './routes/transactions.js';
+import transDetailRoutes from './routes/transDetail.js';
 import brandsRoutes from './routes/brands.js';
 import historyPoinRoutes from './routes/historyPoin.js';
 import notificationRoutes from './routes/notification.js'; 
@@ -48,6 +49,7 @@ app.use('/api', productDetailRoutes);
 app.use('/api', profilRoutes);
 app.use('/api', promoRoutes);
 app.use('/api', transactionsRoutes);
+app.use('/api', transDetailRoutes);
 app.use('/api', brandsRoutes);
 app.use('/api', historyPoinRoutes);
 app.use('/api/notification', notificationRoutes);
@@ -56,43 +58,6 @@ app.get("/", (req, res) => {
   res.send("✅ Server is working");
 });
 
-// let subscriptions = [];
-
-// webpush.setVapidDetails('mailto:knightxenith@gmail.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
-
-// app.post('/api/subscribe', async (req, res) => {
-//   const subscription = req.body;
-//   // subscriptions.push(subscription);
-//   // res.status(201).json({ message: 'Subscribed successfully.' });
-
-//   try {
-//     // Upsert subscription
-//     await Subscription.updateOne(
-//       { endpoint: subscription.endpoint },
-//       { $set: subscription },
-//       { upsert: true }
-//     );
-//     res.status(201).json({ message: 'Subscription saved.' });
-//   } catch (error) {
-//     console.error('Error saving subscription:', error);
-//     res.status(500).json({ error: 'Failed to save subscription' });
-//   }
-// });
-
-// app.post('/api/notify', async (req, res) => {
-//   const payload = req.body;
-
-//   const subscriptions = await Subscription.find();
-
-//   const notifyAll = subscriptions.map(sub =>
-//     webpush.sendNotification(sub, JSON.stringify(payload)).catch(err => {
-//       console.error('Push failed:', err);
-//     })
-//   );
-
-//   await Promise.all(notifyAll);
-//   res.json({ message: 'Notifications sent.' });
-// });
 
 // app.get('/front/subscriptions', async (req, res) => {
 //   try {
@@ -132,12 +97,6 @@ app.get("/", (req, res) => {
 //     console.error('Error fetching subscriptions:', error);
 //     res.status(500).send('<p>Failed to fetch subscriptions</p>');
 //   }
-// });
-
-// app.post("/api/save-fcm-token", async (req, res) => {
-//   const { userId, token } = req.body;
-//   await Token.updateOne({ userId }, { token }, { upsert: true });
-//   res.json({ success: true });
 // });
 
 export default app; // export app instead of app.listen()
